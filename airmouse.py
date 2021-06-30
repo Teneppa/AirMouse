@@ -1,8 +1,9 @@
 import serial
 import pyautogui
 import time
-import win32api, win32con
+#import win32api, win32con
 
+from pymouse import PyMouse
 from numpy import interp
 
 ser = serial.Serial("COM7", 115200)
@@ -11,6 +12,8 @@ ser.timeout = 1
 sCount = 0
 sXArray = []
 sYArray = []
+
+m = PyMouse()
 
 try:
     while True:
@@ -54,9 +57,11 @@ try:
         sYArray.append(int(yCoord))
 
         if array[3] == "0":
-            win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, int(xCoord), int(yCoord), 0, 0)
+            #win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, int(xCoord), int(yCoord), 0, 0)
+            m.press(int(xCoord), int(yCoord))
         else:
-            win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, int(xCoord), int(yCoord), 0, 0)
+            #win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, int(xCoord), int(yCoord), 0, 0)
+            m.release(int(xCoord), int(yCoord))
 
         if sCount >= 10:
 
@@ -69,7 +74,8 @@ try:
             sButtonArray = []
             
             #pyautogui.moveTo(int(xCoord), int(yCoord))
-            win32api.SetCursorPos((int(xCoord),int(yCoord)))
+            #win32api.SetCursorPos((int(xCoord),int(yCoord)))
+            m.move(int(xCoord), int(yCoord))
             
         else:
             sCount += 1
