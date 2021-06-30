@@ -1,32 +1,40 @@
-import serial
+import socket
 import pyautogui
 import time
-#import win32api, win32con
 
-from pymouse import PyMouse
+from pynput.mouse import Button, Controller
 from numpy import interp
 
-ser = serial.Serial("COM7", 115200)
-ser.timeout = 1
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('10.0.0.184', 8421))
 
 sCount = 0
 sXArray = []
 sYArray = []
 
-m = PyMouse()
+mouse = Controller()
 
 try:
     while True:
-        ser.write(b'd;')
-        recv = ser.readline().decode().replace(";", "").strip()
+        
+        recv = ""
+        try:
+            s.send(b'd')
+            recv = s.recv(1024).decode().strip().replace('\n', "")
+            s.close()
+        except Exception as e:
+            s.close()
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect(('10.0.0.184', 8421))
+
+        if not recv:
+            continue
             
         array = recv.split(",")
-        #print(array)
 
         # Find out the display resolution to center the cursor properly
         w,h = pyautogui.size()
 
-        #print(array)
 
         x = float(array[0])
         y = float(array[2])
@@ -50,18 +58,13 @@ try:
             yAngle = y
         yCoord = interp(yAngle,[-50,50],[0,h])
 
-        #print(xAngle, yAngle)
-        #print(xCoord, yCoord)
-
         sXArray.append(int(xCoord))
         sYArray.append(int(yCoord))
 
         if array[3] == "0":
-            #win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, int(xCoord), int(yCoord), 0, 0)
-            m.press(int(xCoord), int(yCoord))
+            mouse.press(Button.left)
         else:
-            #win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, int(xCoord), int(yCoord), 0, 0)
-            m.release(int(xCoord), int(yCoord))
+            mouse.release(Button.left)
 
         if sCount >= 10:
 
@@ -73,9 +76,7 @@ try:
             sYArray = []
             sButtonArray = []
             
-            #pyautogui.moveTo(int(xCoord), int(yCoord))
-            #win32api.SetCursorPos((int(xCoord),int(yCoord)))
-            m.move(int(xCoord), int(yCoord))
+            mouse.position = (int(xCoord),int(yCoord))
             
         else:
             sCount += 1
@@ -85,4 +86,4 @@ except Exception as e:
     print(e)
     print("Ok bye")
 
-ser.close()
+s.close()
