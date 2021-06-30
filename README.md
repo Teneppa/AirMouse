@@ -4,6 +4,11 @@ The demo only works on certain direction, there's no reset for the orientation a
 the firmware kept on crashing so now the connection is restarted after every sent message to prevent
 the stack from filling up.
 
+#### Python3 required libraries:
+- pynput
+- numpy
+- pyautogui
+
 #### Pinout:
 | NodeMCU pin   | BNO055 |
 | ------------- | ------------- |
