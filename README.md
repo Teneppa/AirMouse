@@ -9,6 +9,8 @@ the stack from filling up.
 - numpy
 - pyautogui
 
+Edit: Now it seems like this keeps crashing the windows' window manager if you do the gesture a couple of times in a row, so make sure if you want to try this to close everything important :D
+
 #### Pinout:
 | NodeMCU pin   | BNO055 |
 | ------------- | ------------- |
