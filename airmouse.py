@@ -3,6 +3,9 @@ import pyautogui
 import time
 
 from pynput.mouse import Button, Controller
+from pynput.keyboard import Key
+from pynput.keyboard import Controller as kbController
+
 from numpy import interp
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,7 +15,12 @@ sCount = 0
 sXArray = []
 sYArray = []
 
+oldAvgY = 0
+bFirstAvg = True
+oldYTime = 0
+
 mouse = Controller()
+keyboard = kbController()
 
 try:
     while True:
@@ -70,6 +78,24 @@ try:
 
             avgX = int(sum(sXArray)/sCount)
             avgY = int(sum(sYArray)/sCount)
+
+            # ==============================
+            diff = abs(avgY-oldAvgY)
+
+            #print(time.time() - oldYTime)
+            if diff > 500 and not bFirstAvg and time.time() - oldYTime > 0.3:
+                print(diff)
+                keyboard.press(Key.cmd_l)
+                keyboard.press(Key.tab)
+                keyboard.release(Key.cmd_l)
+                keyboard.release(Key.tab)
+
+                oldYTime = time.time()
+            else:
+                bFirstAvg = False
+                
+            oldAvgY = avgY
+            # ==============================
             
             sCount = 0
             sXArray = []
